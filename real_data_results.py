@@ -63,7 +63,7 @@ def figure6_graph():
     labels = ['greedy', 'random', 'UCB', 'EI', 'PI']
         
     for i in labels:
-        plt.errorbar(noise_levels, all_res[i], all_var[i], label=i, capsize=3)
+        plt.errorbar(noise_levels, all_res[i], np.array(all_var[i])**0.5, label=i, capsize=3)
         
     plt.xlabel(r'noise level($\alpha$)')
     plt.ylabel('Enrichment Factor')
