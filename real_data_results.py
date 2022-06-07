@@ -59,7 +59,7 @@ def figure6_graph():
     
     filename = open('figures/'+str(percent)+'%summarised/figure6.pkl','rb')
     all_res, all_var = pickle.load(filename)
-    noise_levels = ['0.0', '5e-02', '1e-01', '1.5000000000000002e-01','2e-01', '2.5e-01']
+    noise_levels = np.linspace(0,0.25,6)
     labels = ['greedy', 'random', 'UCB', 'EI', 'PI']
         
     for i in labels:
@@ -70,7 +70,7 @@ def figure6_graph():
     plt.legend()
     plt.savefig('figures/real'+str(percent)+'%/fig6.png', dpi=600)
     plt.show()
-    
+    return(all_res, all_var)    
    
 
 def figure7_data():
