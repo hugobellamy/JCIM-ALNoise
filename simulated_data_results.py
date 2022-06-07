@@ -10,11 +10,11 @@ import matplotlib.pyplot as plt
 
 
 def figure1():
-    noise_levels = [0., 0.1,0.2]
+    noise_levels = [0., '1e-01', '2e-01']
     labels = ['greedy', 'random', 'UCB', 'EI', 'PI']
     repeats = 10 # cannot be 1
     for i in noise_levels:
-        data = ra.load_cumulative_data('results/simulated_noR/AL_noise', i,
+        data = ra.load_cumulative_data('results_1%/simulated_noR/AL_noise', i,
                                        repeats, labels)
         
         
@@ -26,26 +26,27 @@ def figure1():
             
             
             plt.errorbar(x, np.mean(data[j], axis=0), np.std(data[j], axis=0),
-                          label=j, capsize=3)
+                          label=j)
         plt.legend()
         plt.xlabel('batch number')
         plt.ylabel('hits')
-        # plt.xlim(-0,12)
+        plt.xlim(-0,12)
         plt.savefig('figures/fig1-'+str(i)+'.png', dpi=600)
         plt.show()
 
 
 def figure2():
     noise_levels = np.linspace(0,0.25,6)
+    noise_2 = ['0.0', '5e-02', '1e-01', '1.5000000000000002e-01','2e-01', '2.5e-01']
     labels = ['greedy', 'random', 'UCB', 'EI', 'PI']
     res = {}
     repeats = 10
-    index = 8
+    index = 5
     for i in labels:
         res[i] = []
     for j in range(6):
       
-        data = ra.load_cumulative_data('results/simulated_noR/AL_noise', noise_levels[j],
+        data = ra.load_cumulative_data('results_1%/simulated_noR/AL_noise', noise_2[j],
                                        repeats, labels)
         
         for k in labels:
@@ -61,7 +62,7 @@ def figure2():
             
     for i in labels:
         plt.errorbar(noise_levels, np.mean(res[i], axis=1), 
-                     np.std(res[i], axis=1), label=i, capsize=3)
+                     np.std(res[i], axis=1), label=i)
     plt.legend()
     plt.xlabel(r'noise fraction ($\alpha$)')
     plt.ylabel('hits')
@@ -73,22 +74,23 @@ def figure2():
 def figure3():
     
     noise_levels = np.linspace(0,0.25,6)
+    noise_2 = ['0.0', '5e-02', '1e-01', '1.5000000000000002e-01','2e-01', '2.5e-01']
     
     labels2 = ['greedy', 'PI']
     res = {}
     res_t = {}
     repeats = 10
-    index = 8
+    index = 5
     
     for i in labels2:
         res[i] = []
         res_t[i] = []
         
-    for j in noise_levels:
+    for j in noise_2:
       
-        data = ra.load_cumulative_data('results/simulated_noR/AL_noise', j,
+        data = ra.load_cumulative_data('results_1%/simulated_noR/AL_noise', j,
                                        repeats, labels2)
-        data_t = ra.load_true_cumulative_data('results/simulated_noR/AL_noise',
+        data_t = ra.load_true_cumulative_data('results_1%/simulated_noR/AL_noise',
                                               j, repeats, labels2)
         
         for k in labels2:
@@ -110,10 +112,10 @@ def figure3():
                 
     for i in labels2:
         plt.errorbar(noise_levels, np.mean(res[i], axis=1), 
-                     np.std(res[i], axis=1), label=i, capsize=3)
+                     np.std(res[i], axis=1), label=i)
         
         plt.errorbar(noise_levels, np.mean(res_t[i], axis=1), 
-                     np.std(res_t[i], axis=1), label=i+'(TH)', capsize=3)
+                     np.std(res_t[i], axis=1), label=i+'(TH)')
     
     
     plt.xlabel(r'noise fraction ($\alpha$)')
@@ -124,14 +126,14 @@ def figure3():
     plt.show()
     
 def figure4():
-    noise_levels = [0.2]
+    noise_levels = ['2e-01']
     labels = ['greedy', 'PI']
     repeats = 10 # cannot be 1
     for i in noise_levels:
-        data = ra.load_true_cumulative_data('results/simulated_noR/AL_noise', i,
+        data = ra.load_true_cumulative_data('results_1%/simulated_noR/AL_noise', i,
                                        repeats, labels)
         
-        data2 = ra.load_true_cumulative_data('results/simulated/AL_noise', i,
+        data2 = ra.load_true_cumulative_data('results_1%/simulated/AL_noise', i,
                                        repeats, labels)
         
         
@@ -144,14 +146,14 @@ def figure4():
             
             
             plt.errorbar(x, np.mean(data[j], axis=0), np.std(data[j], axis=0),
-                          label=j, capsize=3)
+                          label=j)
             
             plt.errorbar(x, np.mean(data2[j], axis=0), np.std(data2[j], axis=0),
-                          label=j+'(retests)', capsize=3)
+                          label=j+'(retests)')
             
         plt.legend()
         plt.xlabel('batch number')
-        # plt.xlim(-0,12)
+        plt.xlim(-0,12)
         plt.ylabel('true hits')
         plt.savefig('figures/fig4-'+str(i)+'.png', dpi=600)
         plt.show()
@@ -160,6 +162,7 @@ def figure4():
 def figure5(a):
     
     noise_levels = np.linspace(0,0.25,6)
+    noise_2 = ['0.0', '5e-02', '1e-01', '1.5000000000000002e-01','2e-01', '2.5e-01']
     labels = ['greedy', 'PI']
     res_t = {}
     res_retest = {}
@@ -170,13 +173,13 @@ def figure5(a):
         res_t[i] = []
         res_retest[i] = []
         
-    for j in noise_levels:
+    for j in noise_2:
       
 
-        data_t = ra.load_true_cumulative_data('results/simulated_noR/AL_noise',
+        data_t = ra.load_true_cumulative_data('results_1%/simulated_noR/AL_noise',
                                               j, repeats, labels)
         
-        data_retest = ra.load_true_cumulative_data('results/simulated/AL_noise',
+        data_retest = ra.load_true_cumulative_data('results_1%/simulated/AL_noise',
                                               j, repeats, labels)
         
 
@@ -199,10 +202,10 @@ def figure5(a):
     
     for i in labels:
         plt.errorbar(noise_levels, np.mean(res_t[i], axis=1), 
-                     np.std(res_t[i], axis=1), label=i, capsize=3)
+                     np.std(res_t[i], axis=1), label=i)
         
         plt.errorbar(noise_levels, np.mean(res_retest[i], axis=1), 
-                     np.std(res_retest[i], axis=1), label=i+'(retests)', capsize=3)
+                     np.std(res_retest[i], axis=1), label=i+'(retests)')
         
         
     plt.legend()
@@ -218,9 +221,9 @@ def main():
     figure2()
     figure3()
     figure4()   
-    figure5(4)
-    figure5(8)
-    
+    figure5(5)
+    figure5(20)
+                
     
 if __name__ == '__main__':
     main()

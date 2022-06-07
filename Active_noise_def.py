@@ -118,6 +118,9 @@ class Active_learner:
     def initial_batch(self, initial=None):
         # if there is no proived intial batch select one randomly based on size
         # of a regular batch
+        
+        np.random.seed(self.seed*3) # set seed of initial batch allowing reproduciblitly
+
         if initial is None:
             initial = np.random.choice(np.linspace(0, self.total_entries -
                                                    1, self.total_entries),

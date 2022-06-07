@@ -6,6 +6,7 @@ Created on Mon Feb  7 13:26:02 2022
 """
 
 import CSV_loader as csv
+from joblib import Parallel, delayed
 import pickle
 import os
 import numpy as np 
@@ -15,7 +16,8 @@ import ranking_functions as rnk
 from sklearn.ensemble import RandomForestRegressor
 import retest_metrics as rtm
 import results_analysis as resa
-
+import multiprocessing as mp
+import time
 
 def prediction_variance(model, X):
     individual_predictions = []
@@ -41,7 +43,7 @@ def test(path):
 
     """
     # Load dataset
-    dataset = csv.data_obj('data/'+path)
+    dataset = csv.data_obj('qsar_data/'+path)
     X, y = dataset.total_data()
     
     CHEMBL_name = path[:-4]
@@ -51,7 +53,7 @@ def test(path):
     a = y
     a = 2*a 
     a.sort() 
-    crit = a[int(len(a)*0.90)]/2 
+    crit = a[int(len(a)*0.99)]/2 # this is the only line to change when going between 10% and 1% 
     # how many batches to perfrom
     batch_n =int(len(y)/200)+1
     #range of values for noise
@@ -68,22 +70,19 @@ def test(path):
     
     for i in noise_factors:
         noise = i*noise_range
-        print('Starting noise = ', noise, end=' ')
+        
         for j in range(repeats):
-            if j!= repeats-1:
-                print(j, end=' ')
-            else:
-                print(j)
+            
             # first run with no retests
             data = {} 
             for k in range(len(labels)):
                 
-                base = RandomForestRegressor(15, n_jobs=-1)
+                base = RandomForestRegressor(100, n_jobs=-1, random_state=seeds[repeats-j-1])
                 
                 AL = alf.Active_learner(base, methods[k], 100, noise,
                                         crit_value=crit, 
                                         retest_metric=rtm.empty)
-
+                # load the data, this sets the seed used for the noise generation
                 AL.load_data(X,y,seeds[j])
 
                 AL.active_learn(batch_n, prediction_variance)
@@ -95,14 +94,14 @@ def test(path):
             
             all_hits = [hits_list, true_hits_list]
             
-            fname = 'results/'+CHEMBL_name+'/noR/AL_noise'+str(i)+'R'+str(j)+'.pkl'
+            fname = 'results_1%/'+CHEMBL_name+'/noR/AL_noise'+str(i)+'R'+str(j)+'.pkl'
     
             pickle.dump(all_hits, open(fname,'wb'))
             
             # second, repeat with retests
             data2 = {} 
             for k in range(len(labels)):
-                base = RandomForestRegressor(15, n_jobs=-1)
+                base = RandomForestRegressor(100, n_jobs=-1, random_state=seeds[repeats-j-1])
                 
                 AL2 = alf.Active_learner(base, methods[k], 100, noise,
                                         crit_value=crit, 
@@ -120,28 +119,32 @@ def test(path):
             
             all_hits = [hits_list, true_hits_list]
             
-            fname = 'results/'+CHEMBL_name+'/withR/AL_noise'+str(i)+'R'+str(j)+'.pkl'
+            fname = 'results_1%/'+CHEMBL_name+'/withR/AL_noise'+str(i)+'R'+str(j)+'.pkl'
     
             pickle.dump(all_hits, open(fname,'wb'))
+
         
+def exp(name):
+    length = len(pd.read_csv('qsar_data/'+name))
+    if length>800:  
+        CHEMBL_name = name[:-4]
+        print('New Dataset '+CHEMBL_name)
+        os.mkdir('results_1%/'+CHEMBL_name)
+        os.mkdir('results_1%/'+CHEMBL_name+'/noR')
+        os.mkdir('results_1%/'+CHEMBL_name+'/withR')
+        test(name)
+        
+    os.remove('qsar_data/'+name)
         
 def main():
     
-    all_files = os.listdir('data')
+    all_files = os.listdir('qsar_data')
+    num_cores = mp.cpu_count()
     
-    
-    for j in all_files:
-        length = len(pd.read_csv('data/'+j))
-        if length>800:  
-            CHEMBL_name = j[:-4]
-            print('New Dataset '+CHEMBL_name)
-            os.mkdir('results/'+CHEMBL_name)
-            os.mkdir('results/'+CHEMBL_name+'/noR')
-            os.mkdir('results/'+CHEMBL_name+'/withR')
+    Parallel(n_jobs=num_cores)(delayed(exp)(all_files[i]) for i in range(len(all_files)))
+   
+   
             
-            test(j)
-            
-        os.remove('data/'+j)
         
 if __name__ == '__main__':
     main()

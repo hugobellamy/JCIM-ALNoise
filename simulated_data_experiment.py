@@ -24,9 +24,8 @@ def prediction_variance(model, X):
 def main():
     # generate dataset - noise added later
     
-    X, y, coef = datasets.make_regression(n_samples = 5000, n_features = 10,
-                                          n_informative = 5, n_targets = 1,
-                                          noise = 0.0, coef = True)
+    X, y = datasets.make_friedman1(n_samples = 5000, n_features = 10,
+                                          noise = 0.0)
 
     # sort paramaters for active learning 
     # first what is top 10%
