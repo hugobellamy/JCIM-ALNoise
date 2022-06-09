@@ -19,9 +19,9 @@ def prediction_variance(model, X):
         individual_predictions.append(m.predict(X))
     y_var = np.var(individual_predictions, axis=0)
     return(y_var)
+ 
 
-
-def main():
+def main(percent):
     # generate dataset - noise added later
     
     X, y = datasets.make_friedman1(n_samples = 5000, n_features = 10,
@@ -32,7 +32,7 @@ def main():
     a = y
     a = 2*a 
     a.sort() 
-    crit = a[int(len(a)*0.9)]/2 
+    crit = a[int(len(a)*(100-percent)/100]/2 
     # how many batches to perfrom
     batch_n =int(len(y)/200)+1
     #range of values for noise
@@ -41,9 +41,7 @@ def main():
     # acquistion metrics to try
     methods = [rnk.greedy, rnk.random, rnk.UCB, rnk.EI, rnk.PI]
     labels = ['greedy', 'random', 'UCB', 'EI', 'PI']
-
     seeds = [658, 682, 533, 27, 889, 224, 205, 338, 559, 163]
-    
     repeats = 10
     
     for i in noise_factors:
@@ -58,7 +56,7 @@ def main():
             data = {} 
             for k in range(len(labels)):
                 
-                base = RandomForestRegressor(15, n_jobs=-1)
+                base = RandomForestRegressor(100, n_jobs=-1, random_state=seeds[repeats-j-1])
                 
                 AL = alf.Active_learner(base, methods[k], 100, noise,
                                         crit_value=crit, 
@@ -69,14 +67,14 @@ def main():
                 AL.active_learn(batch_n, prediction_variance)
                 
                 data[labels[k]] = AL
-            fname = 'results/simulated_noR/AL_noise'+str(i)+'R'+str(j)+'.pkl'
+            fname = 'results_simulated/'+str(percent)+'%/noR/AL_noise'+str(i)+'R'+str(j)+'.pkl'
     
             pickle.dump(data, open(fname,'wb'))
             
             # second, repeat with retests
             data2 = {} 
             for k in range(len(labels)):
-                base = RandomForestRegressor(15, n_jobs=-1)
+                base = RandomForestRegressor(100, n_jobs=-1, random_state=seeds[repeats-j-1])
                 
                 AL2 = alf.Active_learner(base, methods[k], 100, noise,
                                         crit_value=crit, 
@@ -87,9 +85,10 @@ def main():
                 AL2.active_learn(batch_n, prediction_variance)
                 
                 data2[labels[k]] = AL2
-            fname = 'results/simulated/AL_noise'+str(i)+'R'+str(j)+'.pkl'
+            fname = 'results_simulated/'+str(percent)+'%/wR/AL_noise'+str(i)+'R'+str(j)+'.pkl'
     
             pickle.dump(data2, open(fname,'wb'))
             
 if __name__ == '__main__':
-    main()
+    main(1)
+    main(10)
