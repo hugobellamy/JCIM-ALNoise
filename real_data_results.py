@@ -16,7 +16,6 @@ percent = 10
 
 def figure6_data():
     # show average enrichment factor after approx 20% of dataset added to data
-    
     datasets = os.listdir('results_'+str(percent)+'%/')
     noise_2 = ['0.0', '5e-02', '1e-01', '1.5000000000000002e-01','2e-01', '2.5e-01']
     labels = ['greedy', 'random', 'UCB', 'EI', 'PI']
@@ -28,9 +27,7 @@ def figure6_data():
         all_res[i]=[]
         all_var[i]=[]
     
-    
     for j in noise_2:
-        
         noise_res = {}
         for l in labels:
             noise_res[l] = []
@@ -39,9 +36,7 @@ def figure6_data():
             if i[0] =='C':
             
                 length = len(pd.read_csv('qsar_data/'+i+'.csv'))
-            
                 index = int(np.round(length/100)*0.2-1)
-            
                 data, _ = ra.dataset(i, False, j, index, False, percent)
                 
                 for k in labels:
@@ -49,7 +44,7 @@ def figure6_data():
     
         for k in labels:
             all_res[k].append(np.mean(noise_res[k]))
-            all_var[k].append(np.std(noise_res[k]))
+            all_var[k].append(np.var(noise_res[k]))
             
     filename = open('figures/'+str(percent)+'%summarised/figure6.pkl','wb')
     pickle.dump([all_res, all_var], filename)
@@ -61,16 +56,19 @@ def figure6_graph():
     all_res, all_var = pickle.load(filename)
     noise_levels = np.linspace(0,0.25,6)
     labels = ['greedy', 'random', 'UCB', 'EI', 'PI']
-        
+    colors = ['tab:blue', 'tab:red', 'tab:green', 'tab:purple', 'tab:orange']
+    colors = dict(zip(labels,colors))
+                        
     for i in labels:
-        plt.errorbar(noise_levels, all_res[i], np.array(all_var[i]), label=i, capsize=3)
-        
+        plt.errorbar(noise_levels, all_res[i], np.array(np.transpose(all_var[i]))**0.5, label=i, capsize=3, color=colors[i])
+                                                
     plt.xlabel(r'noise level($\alpha$)')
     plt.ylabel('Enrichment Factor')
     plt.legend()
+    plt.legend(loc=8,ncol=3)
+    plt.ylim(0.7,2.19)
     plt.savefig('figures/real'+str(percent)+'%/fig6.png', dpi=600)
     plt.show()
-    return(all_res, all_var)    
    
 
 def figure7_data():
@@ -238,7 +236,7 @@ def figure8_graph(fraction):
     plt.xlabel(r'noise level($\alpha$)')
     plt.ylabel('retest wins (%)')
     plt.legend()
-    plt.savefig('figures/real'+str(percent)+'%/fig8'+str(fractions)'.png', dpi=600)
+    plt.savefig('figures/real'+str(percent)+'%/fig8'+str(fractions)+'.png', dpi=600)
     plt.show()
     
 
