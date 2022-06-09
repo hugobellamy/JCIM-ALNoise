@@ -161,7 +161,6 @@ def int_true_cumulative_data(data, labels):
     
     return(results)
 
-
 def dataset(name, retests, noise, index, true, percent):
     """
     
@@ -214,7 +213,9 @@ def dataset(name, retests, noise, index, true, percent):
         
         base_data = pickle.load(open(base_file,'rb'))
 
-        base = base_data[0]['random'][index]+10e-5
+        base = base_data[0]['random'][index]
+        if base<1:
+            base=1
         
         for j in labels:
             results[j].append(data[true][j][index]/base)
