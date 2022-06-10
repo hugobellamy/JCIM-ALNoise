@@ -1,3 +1,6 @@
 results_simulated
 *.swp
 *.pyc
+*/.DS_Store
+.DS_Store
+*.zip

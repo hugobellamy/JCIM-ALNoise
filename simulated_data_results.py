@@ -50,6 +50,7 @@ def figure2():
     colors = ['tab:blue', 'tab:red', 'tab:green', 'tab:purple', 'tab:orange']
     colors = dict(zip(labels,colors))
     res = {}
+    x = np.linspace(0,0.25,6)
     index = 8
     for i in labels:
         res[i] = []
@@ -70,10 +71,10 @@ def figure2():
             res[k].append(enrich)
             
     for i in labels:
-        plt.errorbar(noise_levels, np.mean(res[i], axis=1), 
+        plt.errorbar(x, np.mean(res[i], axis=1), 
                      np.std(res[i], axis=1), label=i, capsize=3, color=colors[i])
     plt.legend(loc=8, ncol=3)
-    plt.ylim(-50,510)
+    plt.ylim(-5,55)
     plt.xlabel(r'noise fraction ($\alpha$)')
     plt.ylabel('hits')
     plt.savefig(f'figures/simulated{percent}%/fig2.png', dpi=600)
@@ -91,7 +92,7 @@ def figure3():
     res = {}
     res_t = {}
     index = 8
-    
+    x = np.linspace(0,0.25,6) 
     for i in labels2:
         res[i] = []
         res_t[i] = []
@@ -120,9 +121,9 @@ def figure3():
             
                 
     for i in labels2:
-        plt.errorbar(noise_levels, np.mean(res[i], axis=1), 
+        plt.errorbar(x, np.mean(res[i], axis=1), 
                      np.std(res[i], axis=1), label=i, capsize=3, color=c2[i])
-        plt.errorbar(noise_levels, np.mean(res_t[i], axis=1), 
+        plt.errorbar(x, np.mean(res_t[i], axis=1), 
                      np.std(res_t[i], axis=1), label=i+'(TH)', capsize=3, color=c3[i])
     plt.xlabel(r'noise fraction ($\alpha$)')
     plt.ylabel('hits/true hits')
@@ -161,11 +162,12 @@ def figure4():
         plt.show()
     
 
-def figure5(a):
+def figure5(a, L=8):
     # should be run with a=4 and a=8
     noise_levels = ['0.0', '5e-02', '1e-01', '1.5000000000000002e-01','2e-01', '2.5e-01']
     labels = ['greedy', 'PI']
     res_t = {}
+    x = np.linspace(0,0.25,6)
     res_retest = {}
     repeats = 10
     c2 = ['tab:blue', 'tab:orange']
@@ -195,18 +197,18 @@ def figure5(a):
             res_retest[k].append(enrich_retest)
     
     for i in labels:
-        plt.errorbar(noise_levels, np.mean(res_t[i], axis=1), 
+        plt.errorbar(x, np.mean(res_t[i], axis=1), 
                      np.std(res_t[i], axis=1), label=i, capsize=3, color=c2[i])
-        plt.errorbar(noise_levels, np.mean(res_retest[i], axis=1), 
+        plt.errorbar(x, np.mean(res_retest[i], axis=1), 
                      np.std(res_retest[i], axis=1), label=i+'(retests)', capsize=3, color=c3[i])
         
-    plt.legend(loc=8, ncol=2)
+    plt.legend(loc=L, ncol=2)
     plt.xlabel(r'noise fraction ($\alpha$)')
     plt.ylabel('true hits')
-    plt.ylim(200,510)
+    plt.ylim(24,54.5)
     plt.savefig(f'figures/simulated{percent}%/fig5'+str(a)+'.png', dpi=600)
     plt.show()
-
+"""
 if __name__=='__main__':
     figure1()
     figure2()
@@ -214,3 +216,4 @@ if __name__=='__main__':
     figure4()
     figure5(4)
     figure5(8)
+"""
