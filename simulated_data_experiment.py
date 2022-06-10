@@ -21,20 +21,17 @@ def prediction_variance(model, X):
     return(y_var)
  
 
-def main(percent):
+def main(percent, batch_size=100):
     # generate dataset - noise added later
-    
     X, y = datasets.make_friedman1(n_samples = 5000, n_features = 10,
                                           noise = 0.0)
-
     # sort paramaters for active learning 
-    # first what is top 10%
-    a = y
-    a = 2*a 
+    # first what is top percent
+    a = y.copy()
     a.sort() 
-    crit = a[int(len(a)*(100-percent)/100]/2 
+    crit = a[int(len(a)*(100-percent)/100)]
     # how many batches to perfrom
-    batch_n =int(len(y)/200)+1
+    batch_n = int(len(y)/200)+1
     #range of values for noise
     noise_range = (np.amax(y)-np.amin(y)) 
     noise_factors = np.linspace(0,0.25,6)
@@ -55,40 +52,38 @@ def main(percent):
             # first run with no retests
             data = {} 
             for k in range(len(labels)):
-                
-                base = RandomForestRegressor(100, n_jobs=-1, random_state=seeds[repeats-j-1])
-                
-                AL = alf.Active_learner(base, methods[k], 100, noise,
+                base = RandomForestRegressor(100, n_jobs=-2, random_state=seeds[repeats-j-1])
+                AL = alf.Active_learner(base, methods[k], batch_size, noise,
                                         crit_value=crit, 
                                         retest_metric=rtm.empty)
-
                 AL.load_data(X,y,seeds[j])
-
                 AL.active_learn(batch_n, prediction_variance)
-                
                 data[labels[k]] = AL
-            fname = 'results_simulated/'+str(percent)+'%/noR/AL_noise'+str(i)+'R'+str(j)+'.pkl'
-    
+            
+             if batch_size == 100:
+                fname =f'results_simulated/{percent}%/noR/AL_noise{i}R{j}.pkl'
+            else:
+                fname = f'results_simualted/batchsize{batch_size}/noR/AL_noise{i}R{j}.pkl'
             pickle.dump(data, open(fname,'wb'))
             
             # second, repeat with retests
             data2 = {} 
             for k in range(len(labels)):
-                base = RandomForestRegressor(100, n_jobs=-1, random_state=seeds[repeats-j-1])
-                
-                AL2 = alf.Active_learner(base, methods[k], 100, noise,
+                base = RandomForestRegressor(100, n_jobs=-2, random_state=seeds[repeats-j-1])
+                AL2 = alf.Active_learner(base, methods[k], batch_size, noise,
                                         crit_value=crit, 
                                         retest_metric=rtm.simple)
-
                 AL2.load_data(X,y, seeds[j])
-
                 AL2.active_learn(batch_n, prediction_variance)
-                
                 data2[labels[k]] = AL2
-            fname = 'results_simulated/'+str(percent)+'%/wR/AL_noise'+str(i)+'R'+str(j)+'.pkl'
-    
+            if batch_size == 100:
+                fname = f'results_simulated/{percent}%/wR/AL_noise{i}R{j}.pkl'
+            else:
+                fname = 'results_simualted/batchsize{batch_size}/wR/AL_noise{i}R{j}.pkl'
             pickle.dump(data2, open(fname,'wb'))
             
 if __name__ == '__main__':
-    main(1)
-    main(10)
+    #main(1)
+    #main(10)
+    main(10, batch_size=300)
+    main(10, batch_size=500)

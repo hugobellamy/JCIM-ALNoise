@@ -4,7 +4,6 @@ Created on Tue Nov 30 13:53:20 2021
 
 @author: Hugo
 """
-
 import numpy as np
 import retest_metrics as rt
 
@@ -20,35 +19,29 @@ def list_to_dict(X, keys=None):
 def upack(Y):
     out = []
     leng = len(Y)
-    
     if leng == 1:
         return(list(Y[0]))
     else:
-        
         out = list(Y[0])
         for j in range(leng-1):
             out += list(Y[j+1])
-    
         return(np.array(out))
 
-def build_train_data(X_dict, Y_dict, indice_list):
 
+def build_train_data(X_dict, Y_dict, indice_list):
     all_ind = upack(indice_list)
     X_train = []
     Y_train = np.array([])
     for a in all_ind:
         L = len(Y_dict[a])
         for i in range(L):
-            
             X_train.append(X_dict[a])
-      
         Y_train = np.append(Y_train, Y_dict[a])
     Y_train = np.array(Y_train).ravel()
     return(X_train, Y_train)
 
 
 def build_test_data(X_dict, indice_list, total):
-
     all_ind = upack(indice_list)
     X_test = []
     keys = []
@@ -74,22 +67,17 @@ def make_noise(Y, noise, seed):
 
 
 def retest(active, y_pred, y_var, keys, batch):
-    
     batch_pred = []
     batch_var = [] 
     batch_obs = []
-    
     for i in batch:
         position = keys.index(i)
         batch_pred.append(y_pred[position])
         batch_var.append(y_var[position])
         batch_obs.append([active.Y_noise[i]])
-        
     return(active.retest_metric(batch, batch_pred, batch_var, batch_obs,
                                 active.crit))    
 
-
-   
     
 class Active_learner:
 
@@ -118,9 +106,7 @@ class Active_learner:
     def initial_batch(self, initial=None):
         # if there is no proived intial batch select one randomly based on size
         # of a regular batch
-        
         np.random.seed(self.seed*3) # set seed of initial batch allowing reproduciblitly
-
         if initial is None:
             initial = np.random.choice(np.linspace(0, self.total_entries -
                                                    1, self.total_entries),
@@ -131,12 +117,9 @@ class Active_learner:
     def predict_untested(self, var_est):
         X_train, y_train = build_train_data(self.X, self.Y_noise,
                                             self.batch_details)
-        
         self.Model.fit(X_train, y_train)
-        
         if self.crit is None and self.batch_n == 1:
             self.crit = np.amax(y_train)
-            
         X_test, keys = build_test_data(self.X, self.batch_details,
                                        self.total_entries)
         y_pred = self.Model.predict(X_test)
