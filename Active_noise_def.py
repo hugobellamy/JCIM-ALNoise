@@ -62,7 +62,7 @@ def new_indices(scores, keys, n):
 def make_noise(Y, noise, seed):
     # produce another version of y that intoduces noise
     np.random.seed(seed)
-    rands = np.random.normal(0, noise, len(Y))
+    rands = np.random.normal(0, noise, len(Y)).reshape(len(Y),1)
     return((Y+rands).reshape(len(Y),1))
 
 

@@ -1,4 +1,5 @@
 results_simulated
+results_PubChem
 *.swp
 *.pyc
 */.DS_Store
