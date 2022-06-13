@@ -31,7 +31,7 @@ def main(percent, batch_size=100):
     a.sort() 
     crit = a[int(len(a)*(100-percent)/100)]
     # how many batches to perfrom
-    batch_n = int(len(y)/200)+1
+    batch_n = int(len(y)/(2*batch_size))+1
     #range of values for noise
     noise_range = (np.amax(y)-np.amin(y)) 
     noise_factors = np.linspace(0,0.25,6)
@@ -60,10 +60,10 @@ def main(percent, batch_size=100):
                 AL.active_learn(batch_n, prediction_variance)
                 data[labels[k]] = AL
             
-             if batch_size == 100:
+            if batch_size == 100:
                 fname =f'results_simulated/{percent}%/noR/AL_noise{i}R{j}.pkl'
             else:
-                fname = f'results_simualted/batchsize{batch_size}/noR/AL_noise{i}R{j}.pkl'
+                fname = f'results_simulated/batchsize{batch_size}/noR/AL_noise{i}R{j}.pkl'
             pickle.dump(data, open(fname,'wb'))
             
             # second, repeat with retests
@@ -79,7 +79,7 @@ def main(percent, batch_size=100):
             if batch_size == 100:
                 fname = f'results_simulated/{percent}%/wR/AL_noise{i}R{j}.pkl'
             else:
-                fname = 'results_simualted/batchsize{batch_size}/wR/AL_noise{i}R{j}.pkl'
+                fname = f'results_simulated/batchsize{batch_size}/wR/AL_noise{i}R{j}.pkl'
             pickle.dump(data2, open(fname,'wb'))
             
 if __name__ == '__main__':
