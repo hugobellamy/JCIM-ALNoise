@@ -15,16 +15,16 @@ def prediction_variance(model, X):
     return(y_var)
  
 
-def main(batch_size=100):
+def main(n, act_thresh, batch_size=100):
     # load dataset - noise added later
-    X = pd.read_csv('PubChem_data/Real1_fingerprints.csv')
+    X = pd.read_csv(f'PubChem_data/Real{n}_fingerprints.csv')
     X = X.drop(columns=['Unnamed: 0'])
     X = X.to_numpy()
-    y = pd.read_csv('PubChem_data/Real1_targets.csv')
-    y = y.drop(columns=['Unnamed: 0'])
+    y = pd.read_csv(f'PubChem_data/Real{n}_targets.csv')
+    y = y.drop(columns=['Unnamed: 0'])    
     y = y.to_numpy()
     # sort paramaters for active learning 
-    crit = 40 # Defined by pubchem as actives
+    crit = act_thresh # Defined by pubchem as actives
     # how many batches to perfrom
     batch_n = int(len(y)/(2*batch_size))+1
     #range of values for noise
@@ -35,7 +35,7 @@ def main(batch_size=100):
     labels = ['greedy', 'random', 'UCB', 'EI', 'PI']
     seeds = [658, 682, 533, 27, 889, 224, 205, 338, 559, 163]
     repeats = 10
-    file_base = f'results_PubChem/set1/{batch_size}'
+    file_base = f'results_PubChem/set{n}/{batch_size}'
     
     for i in noise_factors:
         noise = i*noise_range
@@ -73,8 +73,8 @@ def main(batch_size=100):
             pickle.dump(data2, open(fname,'wb'))
             
 if __name__ == '__main__':
-    main()
-    main(300)
-    main(500)
-    main(1000)
+    main(2,70,100)
+    main(2,70,300)
+    main(2,70,500)
+    main(2,70,1000)
 
