@@ -31,7 +31,7 @@ mol_list = [x for x in mol_list if x == x]
 act_dict = data['PUBCHEM_ACTIVITY_SCORE'].to_dict()
 
 radius = 2
-nBits = 512
+nBits = 1024
 
 fingerprint_list = []
 index = []
