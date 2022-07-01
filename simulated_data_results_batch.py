@@ -7,11 +7,12 @@ Created on Thu Feb  3 10:58:04 2022
 import numpy as np 
 import results_analysis as ra
 import matplotlib.pyplot as plt
+import pickle
 
 BATCHSIZE = 500
 
-source = f'results_simulated/batchsize{BATCHSIZE}/noR/AL_noise'
-sourceR = f'results_simulated/batchsize{BATCHSIZE}/wR/AL_noise'
+source = f'results_simulated_C/batchsize{BATCHSIZE}/noR/'
+sourceR = f'results_simulated_C/batchsize{BATCHSIZE}/wR/'
 
 repeats = 10
 
@@ -22,9 +23,8 @@ def figure1():
     labels = ['greedy', 'random', 'UCB', 'EI', 'PI']
     colors = ['tab:blue', 'tab:red', 'tab:green', 'tab:purple', 'tab:orange']
     for i in noise_levels:
-        data = ra.load_cumulative_data(source, i,
-                                       repeats, labels)
         
+        data = pickle.load(open(source+f'LCD{i}.pkl', 'rb')) 
         
         length = len(data[labels[0]][0])
         
@@ -54,8 +54,7 @@ def figure2():
     for i in labels:
         res[i] = []
     for j in range(6):
-        data = ra.load_cumulative_data(source, noise_levels[j],
-                                       repeats, labels)
+        data = pickle.load(open(source+f'LCD{noise_levels[j]}.pkl', 'rb')) 
         for k in labels:
             enrich = []
             for l in range(repeats):
@@ -64,7 +63,8 @@ def figure2():
             res[k].append(enrich)
     for i in labels:
         plt.errorbar(x, np.mean(res[i], axis=1), 
-                     np.std(res[i], axis=1), label=i, capsize=3, color=colors[i])
+                     np.std(res[i], axis=1), label=i, capsize=3, color=colors[i],
+                     ls='none', fmt='o')
     plt.legend(loc=8, ncol=3)
     plt.ylim(10,550)
     plt.xlabel(r'noise fraction ($\alpha$)')
@@ -89,10 +89,8 @@ def figure3():
         res_t[i] = []
         
     for j in noise_levels:
-        data = ra.load_cumulative_data(source, j,
-                                       repeats, labels2)
-        data_t = ra.load_true_cumulative_data(source,
-                                              j, repeats, labels2)
+        data = pickle.load(open(source+f'LCD{j}.pkl', 'rb')) 
+        data_t = pickle.load(open(source+f'LTCD{j}.pkl', 'rb')) 
         for k in labels2:
             enrich = []
             enrich_t = []
@@ -126,11 +124,8 @@ def figure4():
     res = {}
     repeats = 10 # cannot be 1
     for i in noise_levels:
-        data = ra.load_true_cumulative_data(source, i,
-                                       repeats, labels)
-        
-        data2 = ra.load_true_cumulative_data(sourceR, i,
-                                       repeats, labels)
+        data = pickle.load(open(source+f'LTCD{i}.pkl', 'rb')) 
+        data2 = pickle.load(open(sourceR+f'LTCD{i}.pkl', 'rb')) 
         length = len(data[labels[0]][0])
         x = np.linspace(1, length, length)
         for j in labels:
@@ -166,10 +161,8 @@ def figure5(a, L=8):
         res_retest[i] = []
         
     for j in noise_levels:
-        data_t = ra.load_true_cumulative_data(source,
-                                              j, repeats, labels)
-        data_retest = ra.load_true_cumulative_data(sourceR,
-                                              j, repeats, labels)
+        data_t = pickle.load(open(source+f'LTCD{j}.pkl', 'rb')) 
+        data_retest = pickle.load(open(sourceR+f'LTCD{j}.pkl', 'rb')) 
         for k in labels:
             enrich_t = []
             enrich_retest = []

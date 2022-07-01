@@ -23,7 +23,7 @@ def prediction_variance(model, X):
 
 def main(percent, batch_size=100):
     # generate dataset - noise added later
-    X, y = datasets.make_friedman1(n_samples = 5000, n_features = 10,
+    X, y = datasets.make_regression(n_samples = 5000, n_features = 10,
                                           noise = 0.0)
     # sort paramaters for active learning 
     # first what is top percent
@@ -32,6 +32,7 @@ def main(percent, batch_size=100):
     crit = a[int(len(a)*(100-percent)/100)]
     # how many batches to perfrom
     batch_n = int(len(y)/(2*batch_size))+1
+    y = y.reshape(len(y),1)
     #range of values for noise
     noise_range = (np.amax(y)-np.amin(y)) 
     noise_factors = np.linspace(0,0.25,6)
@@ -83,7 +84,5 @@ def main(percent, batch_size=100):
             pickle.dump(data2, open(fname,'wb'))
             
 if __name__ == '__main__':
-    #main(1)
-    #main(10)
     main(10, batch_size=300)
     main(10, batch_size=500)

@@ -11,7 +11,7 @@ import os
 import pandas as pd
 import pickle
 
-percent = 1
+percent = 10
 
 def figure6_data():
     # show average enrichment factor after approx 20% of dataset added to data
@@ -169,13 +169,13 @@ def figure6_graph():
                         
     for i in labels:
         plt.errorbar(noise_levels, all_res[i], np.array(np.transpose(all_var[i]))**0.5, label=i,
-                     capsize=3, color=colors[i])
+                     capsize=3, color=colors[i], ls='none', fmt='o')
                                                 
     plt.xlabel(r'noise level($\alpha$)')
     plt.ylabel('Enrichment Factor')
     plt.legend()
     plt.legend(loc=8,ncol=3)
-    plt.ylim(0,4.5)
+    plt.ylim(0.51,3)
     plt.savefig('figures/real'+str(percent)+'%/fig6.png', dpi=600)
     plt.show()
 
@@ -192,14 +192,14 @@ def figure7_graph():
     
     for i in labels:
         plt.errorbar(noise_levels, all_res[i], np.transpose(all_var[i]),
-                     label=i, capsize=3, color=c2[i])
+                     label=i, capsize=3, color=c2[i], ls='none', fmt='o')
         plt.errorbar(noise_levels, all_rest[i], np.transpose(all_vart[i]),
-                     label=i+'(TH)', capsize=3, color=c3[i])
+                     label=i+'(TH)', capsize=3, color=c3[i], ls='none', fmt='o')
         
     plt.xlabel(r'noise level($\alpha$)')
     plt.ylabel('Enrichment Factor')
     plt.legend(loc=8,ncol=2)
-    plt.ylim(0.52,3.9)
+    plt.ylim(0.78,3.1)
     plt.savefig('figures/real'+str(percent)+'%/fig7.png', dpi=600)
     plt.show()
 
@@ -218,12 +218,12 @@ def figure8_graph(fraction):
            a1 = np.array(all_res[k][i])*100/n
            a2 = np.array(all_var[k][i])*100/n
            plt.errorbar(noise_levels, np.array(all_res[k][i])*100/n, np.array(all_var[k][i])*100/n,
-                        label=i+' - '+l2[k], capsize=3, color=colors[i][k])
+                        label=i+' - '+l2[k], capsize=3, color=colors[i][k], ls='none', fmt='o')
        
     plt.xlabel(r'noise level($\alpha$)')
     plt.ylabel('retest wins (%)')
     plt.legend(loc=2, ncol=2)
-    plt.ylim(0,30) 
+    plt.ylim(0,85) 
     plt.savefig('figures/real'+str(percent)+'%/fig8'+str(fraction)+'.png', dpi=600)
     plt.show()
     

@@ -7,11 +7,13 @@ Created on Thu Feb  3 10:58:04 2022
 import numpy as np 
 import results_analysis as ra
 import matplotlib.pyplot as plt
+import pickle
+
 
 percent = 1
 
-source = f'results_simulated/{percent}%/noR/AL_noise'
-sourceR = f'results_simulated/{percent}%/wR/AL_noise'
+source = f'results_simulated_C/{percent}%/noR/'
+sourceR = f'results_simulated_C/{percent}%/wR/'
 
 repeats = 10
 
@@ -22,9 +24,7 @@ def figure1():
     labels = ['greedy', 'random', 'UCB', 'EI', 'PI']
     colors = ['tab:blue', 'tab:red', 'tab:green', 'tab:purple', 'tab:orange']
     for i in noise_levels:
-        data = ra.load_cumulative_data(source, i,
-                                       repeats, labels)
-        
+        data = pickle.load(open(source+f'LCD{i}.pkl', 'rb')) 
         
         length = len(data[labels[0]][0])
         
@@ -56,8 +56,7 @@ def figure2():
         res[i] = []
     for j in range(6):
       
-        data = ra.load_cumulative_data(source, noise_levels[j],
-                                       repeats, labels)
+        data = pickle.load(open(source+f'LCD{noise_levels[j]}.pkl', 'rb')) 
         
         for k in labels:
             
@@ -72,9 +71,10 @@ def figure2():
             
     for i in labels:
         plt.errorbar(x, np.mean(res[i], axis=1), 
-                     np.std(res[i], axis=1), label=i, capsize=3, color=colors[i])
+                     np.std(res[i], axis=1), label=i, capsize=4, color=colors[i],
+                     ls='none', fmt='o')
     plt.legend(loc=8, ncol=3)
-    plt.ylim(-5,55)
+    plt.ylim(-5,57)
     plt.xlabel(r'noise fraction ($\alpha$)')
     plt.ylabel('hits')
     plt.savefig(f'figures/simulated{percent}%/fig2.png', dpi=600)
@@ -98,11 +98,8 @@ def figure3():
         res_t[i] = []
         
     for j in noise_levels:
-        data = ra.load_cumulative_data(source, j,
-                                       repeats, labels2)
-        data_t = ra.load_true_cumulative_data(source,
-                                              j, repeats, labels2)
-        
+        data = pickle.load(open(source+f'LCD{j}.pkl', 'rb')) 
+        data_t = pickle.load(open(source+f'LTCD{j}.pkl', 'rb')) 
         for k in labels2:
             
             enrich = []
@@ -122,9 +119,11 @@ def figure3():
                 
     for i in labels2:
         plt.errorbar(x, np.mean(res[i], axis=1), 
-                     np.std(res[i], axis=1), label=i, capsize=3, color=c2[i])
+                     np.std(res[i], axis=1), label=i, capsize=3, color=c2[i],
+                     ls='none', fmt='o')
         plt.errorbar(x, np.mean(res_t[i], axis=1), 
-                     np.std(res_t[i], axis=1), label=i+'(TH)', capsize=3, color=c3[i])
+                     np.std(res_t[i], axis=1), label=i+'(TH)', capsize=3, color=c3[i],
+                     ls='none', fmt='o')
     plt.xlabel(r'noise fraction ($\alpha$)')
     plt.ylabel('hits/true hits')
     plt.legend(loc=8, ncol=2)
@@ -141,11 +140,9 @@ def figure4():
     res = {}
     repeats = 10 # cannot be 1
     for i in noise_levels:
-        data = ra.load_true_cumulative_data(source, i,
-                                       repeats, labels)
-        
-        data2 = ra.load_true_cumulative_data(sourceR, i,
-                                       repeats, labels)
+
+        data = pickle.load(open(source+f'LTCD{i}.pkl', 'rb')) 
+        data2 = pickle.load(open(sourceR+f'LTCD{i}.pkl', 'rb')) 
         length = len(data[labels[0]][0])
         x = np.linspace(1, length, length)
         for j in labels:
@@ -181,10 +178,8 @@ def figure5(a, L=8):
         res_retest[i] = []
         
     for j in noise_levels:
-        data_t = ra.load_true_cumulative_data(source,
-                                              j, repeats, labels)
-        data_retest = ra.load_true_cumulative_data(sourceR,
-                                              j, repeats, labels)
+        data_t = pickle.load(open(source+f'LTCD{j}.pkl', 'rb')) 
+        data_retest = pickle.load(open(sourceR+f'LTCD{j}.pkl', 'rb')) 
         for k in labels:
             enrich_t = []
             enrich_retest = []
@@ -198,14 +193,16 @@ def figure5(a, L=8):
     
     for i in labels:
         plt.errorbar(x, np.mean(res_t[i], axis=1), 
-                     np.std(res_t[i], axis=1), label=i, capsize=3, color=c2[i])
+                     np.std(res_t[i], axis=1), label=i, capsize=3, color=c2[i],
+                     ls='none', fmt='o')
         plt.errorbar(x, np.mean(res_retest[i], axis=1), 
-                     np.std(res_retest[i], axis=1), label=i+'(retests)', capsize=3, color=c3[i])
+                     np.std(res_retest[i], axis=1), label=i+'(retests)', capsize=3, color=c3[i],
+                     ls='none', fmt='o')
         
     plt.legend(loc=L, ncol=2)
     plt.xlabel(r'noise fraction ($\alpha$)')
     plt.ylabel('true hits')
-    plt.ylim(24,54.5)
+    #plt.ylim(180,445)
     plt.savefig(f'figures/simulated{percent}%/fig5'+str(a)+'.png', dpi=600)
     plt.show()
 """
